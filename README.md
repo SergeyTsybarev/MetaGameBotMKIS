@@ -16,11 +16,15 @@ Telegram бот, который отслеживает раздачи игр в 
 
 ![alt text](https://github.com/SergeyTsybarev/MetaGameBotMKIS/blob/main/image/Metabotinfo.png?raw=true)
 ## Работа бота
+
 ![alt text](https://github.com/SergeyTsybarev/MetaGameBotMKIS/blob/main/image/rabota.png?raw=true)
+
+![alt text](https://github.com/SergeyTsybarev/MetaGameBotMKIS/blob/main/image/rabota2.png?raw=true)
 
 ## Следите за обновлениями!
 
 ![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)
+
 ![Telegram](https://img.shields.io/badge/Telegram-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white)
 
 ### Команда проекта

@@ -2,7 +2,9 @@
 ## Общее представление
 Telegram бот, который 
 · Отслеживает раздачи игр в Steam, Epic Games Store и GOG
+
 · Оповещает пользователей о доступных раздачах
+
 · Предлагает индивидуальный подбор игр по жанру, типу (одиночная/многопользовательская), году выпуска и оценке Metacritic.
 
 ![alt text](https://github.com/SergeyTsybarev/MetaGameBotMKIS/blob/main/image/Main.jpg?raw=true)

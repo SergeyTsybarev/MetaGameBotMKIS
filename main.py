@@ -8,7 +8,15 @@ import sqlite3
 import threading
 import json
 import os
+import pandas as pd
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+import numpy as np
 
+user_states = {}
+games_data = None
+tfidf_matrix = None
+tfidf = None
 # Токен бота
 bot_token = "7799776104:AAGLrlCXCFDjzjFAmt77qptkTAVhui6XIPM"
 if bot_token is None:
@@ -71,7 +79,8 @@ def show_menu(message):
  item5 = types.KeyboardButton("Подписаться")
  item6 = types.KeyboardButton("Отписаться")
  item7 = types.KeyboardButton("Помощь")
- markup.add(item1, item2, item3, item4, item5, item6, item7)
+ item8 = types.KeyboardButton("Рекомендовать игру")
+ markup.add(item1, item2, item3, item4, item5, item6, item7, item8)
  bot.send_message(message.chat.id, "Выберите команду", reply_markup=markup)
 
 # Обработка кнопок и текстовых команд
@@ -88,6 +97,8 @@ def func(message):
   check_all_giveaways(chat_id)
  elif message.text == "Подписаться":
   subscribe(chat_id)
+ elif message.text == "Рекомендовать игру":
+  start_recommendation(message)
  elif message.text == "Отписаться":
   unsubscribe(chat_id)
  elif message.text == "Помощь":
@@ -104,6 +115,170 @@ def func(message):
   help_command(message)
  else:
   bot.send_message(chat_id, "Я не понял вашу команду. Пожалуйста, выберите команду в меню.")
+
+# ---- рекомендательная система ----
+def init_recommendations():
+    global games_data, tfidf_matrix, tfidf
+    try:
+        games_data = pd.read_csv("games.csv")
+        #  Добавляем проверку на наличие необходимых столбцов
+        required_columns = ['Name', 'Genre', 'Publisher', 'Rating', 'Platform']
+        if not all(col in games_data.columns for col in required_columns):
+            raise ValueError(f"games.csv must contain columns: {required_columns}")
+
+        # Создаем TF-IDF векторизатор для каждого критерия
+        tfidf = TfidfVectorizer(stop_words='english')
+        tfidf_matrix = tfidf.fit_transform(games_data['Genre'] + ' ' + games_data['Publisher'] + ' ' + games_data['Platform'] + ' ' + games_data['Rating'].astype(str))
+
+    except FileNotFoundError:
+        print("Файл games.csv не найден.")
+    except Exception as e:
+        print(f"Ошибка при инициализации рекомендательной системы: {e}")
+
+init_recommendations()
+
+# рекомендации
+def get_recommendations(genre=None, publisher=None, platform=None, rating=None):
+    if games_data is None or tfidf_matrix is None:
+        return pd.DataFrame(columns=['Name', 'Genre', 'Publisher', 'Rating', 'Platform'])
+
+    query = ""
+    if genre:
+        query += genre + " "
+    if rating:
+        query += rating + " "
+
+    if not query.strip(): #Если ни одного критерия не указано
+      return pd.DataFrame(columns=['Name', 'Genre', 'Publisher', 'Rating', 'Platform'])
+
+    query_vector = tfidf.transform([query])
+    similarities = cosine_similarity(query_vector, tfidf_matrix).flatten()
+    related_docs_indices = np.argsort(similarities)[::-1]
+    recommendations = games_data.iloc[related_docs_indices[1:6]]
+    return recommendations
+
+
+@bot.message_handler(func=lambda message: message.text.lower() == "рекомендовать игру")
+def start_recommendation(message):
+    chat_id = message.chat.id
+    user_states[chat_id] = {"stage": "genre"}
+    msg = bot.reply_to(message, "Введите жанр игры (например, RPG, Action, Adventure, Strategy, Simulation, Puzzle, Racing):")
+    bot.register_next_step_handler(msg, handle_genre_selection)
+
+#жанровое
+def show_genre_selection(message):
+    chat_id = message.chat.id
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    genres = ['RPG', 'Action', 'Adventure', 'Strategy', 'Simulation', 'Puzzle', 'Racing']
+    markup.add(*genres)
+    bot.send_message(chat_id, "Выберите жанр:", reply_markup=markup)
+
+#@bot.message_handler(func=lambda message: user_states.get(message.chat.id, {}).get("stage") == "genre")
+def handle_genre_selection(message):
+  chat_id = message.chat.id
+  genre = message.text.strip().title()
+  valid_genres = ['RPG', 'Action', 'Adventure', 'Strategy', 'Simulation', 'Puzzle', 'Racing']
+  if genre in valid_genres:
+      user_states[chat_id]["genre"] = genre
+      user_states[chat_id]["stage"] = "rating"
+      msg = bot.reply_to(message, "Введите минимальную оценку (7, 8, или 9):")
+      bot.register_next_step_handler(msg, handle_rating_selection)
+  else:
+      msg = bot.reply_to(message, f"Неверный жанр. Пожалуйста, выберите из списка: {', '.join(valid_genres)}")
+      bot.register_next_step_handler(msg, handle_genre_selection) #Loop back if invalid
+
+
+#оценковое
+
+def handle_rating_selection(message):
+    chat_id = message.chat.id
+    rating_str = message.text.strip()
+
+    # Проверка на наличие только цифр
+    if not rating_str.isdigit():
+        msg = bot.reply_to(message, "Неверный формат оценки. Пожалуйста, введите число (7, 8 или 9):")
+        bot.register_next_step_handler(msg, handle_rating_selection)
+        return
+
+    try:
+        rating = int(rating_str)
+        if rating in [7, 8, 9]:
+            user_states[chat_id]["rating"] = str(rating) + "+"
+            recommendations = get_recommendations(genre=user_states[chat_id].get("genre"), rating=user_states[chat_id]["rating"])
+            send_recommendations(recommendations, chat_id)  # Изменено на send_recommendations
+            del user_states[chat_id]  # Удаляем состояние пользователя
+        else:
+            msg = bot.reply_to(message, "Неверная оценка. Пожалуйста, введите 7, 8 или 9:")
+            bot.register_next_step_handler(msg, handle_rating_selection)
+    except Exception as e:
+        msg = bot.reply_to(message, f"Произошла ошибка: {str(e)}. Попробуйте еще раз.")
+        bot.register_next_step_handler(msg, handle_rating_selection)
+
+
+@bot.message_handler(func=lambda message: True)
+def handle_default_message(message):
+    chat_id = message.chat.id
+    if chat_id in user_states:
+        current_stage = user_states[chat_id]["stage"]
+        if current_stage == "genre":
+            bot.send_message(chat_id, "Выберите жанр из предложенных вариантов.")
+        elif current_stage == "rating":
+            bot.send_message(chat_id, "Выберите минимальную оценку из предложенных вариантов.")
+    else:
+        bot.send_message(chat_id, "Чтобы получить рекомендации, напишите 'Рекомендовать игру'.")
+
+
+def send_recommendations(recommendations, chat_id):
+    if not recommendations.empty:
+        for index, row in recommendations.iterrows():
+            game_name = row['Name']
+            image_url, description = get_steam_game_info(chat_id, game_name) # chat_id передается сюда
+
+            if image_url:
+                try:
+                    bot.send_photo(chat_id, image_url)
+                except Exception as e:
+                    bot.send_message(chat_id, f"Ошибка при отправке изображения {game_name}: {e}")
+            else:
+                bot.send_message(chat_id, f"Изображение для {game_name} не найдено.")
+
+            if description:
+                bot.send_message(chat_id, f"Название: {game_name}\nОписание: {description}")
+            else:
+                bot.send_message(chat_id, f"Описание для {game_name} не найдено.")
+    else:
+        bot.send_message(chat_id, "К сожалению, ничего не найдено.")
+
+
+def get_steam_game_info(chat_id, game_name):
+    try:
+        # Формируем URL для поиска игры на Steam (более точный поиск невозможен без API)
+        url = f"https://store.steampowered.com/search/?term={game_name}"
+        response = requests.get(url)
+        response.raise_for_status()
+
+        soup = BeautifulSoup(response.content, 'html.parser')
+
+        # Попытка найти более надежные селекторы (но все равно не идеально без API)
+        image_element = soup.select_one('.col-search-result__image img') # попробуем другой селектор
+        if image_element:
+            image_url = image_element['src']
+        else:
+            image_url = None
+
+        description_element = soup.select_one('.search_result_desc')
+        description = description_element.text.strip() if description_element else "Описание не найдено."
+
+
+        return image_url, description
+
+    except requests.exceptions.RequestException as e:
+        bot.send_message(chat_id, f"Ошибка при подключении к Steam: {e}")
+        return None, None
+    except Exception as e:
+        bot.send_message(chat_id, f"Произошла ошибка: {e}")
+        return None, None
+
 
 # Команда '/subscribe' для подписки на уведомления
 @bot.message_handler(commands=['subscribe'])
@@ -258,7 +433,5 @@ def auto_check_giveaways():
 
 # --- Запуск бота ---
 # Запускаем автоматическую проверку раздач в отдельном потоке
-thread = threading.Thread(target=auto_check_giveaways)
-thread.start()
 
 bot.polling(none_stop=True)

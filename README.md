@@ -12,7 +12,7 @@ Telegram бот, который отслеживает раздачи игр в 
 [![GOG.com](https://img.shields.io/badge/GOG.com-86328A?logo=gogdotcom&logoColor=fff)](#)
 4) Оповеcтит о новых раздачах быстрее чем остальные ресурсы! Процессы оптимизированы, раздачи и скидки присылает по мере их появления!📬🚀
 
-![alt text](https://github.com/SergeyTsybarev/MetaGameBotMKIS/blob/main/image/privetstvie.png?raw=true)
+![alt text](https://github.com/SergeyTsybarev/MetaGameBotMKIS/blob/main/image/privetstvie2.png?raw=true)
 
 ![alt text](https://github.com/SergeyTsybarev/MetaGameBotMKIS/blob/main/image/Metabotinfo.png?raw=true)
 ## Работа бота

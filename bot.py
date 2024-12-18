@@ -10,7 +10,7 @@ import json
 import os
 
 # Токен бота
-bot_token = os.environ.get("BOT_TOKEN")
+bot_token = "7799776104:AAGLrlCXCFDjzjFAmt77qptkTAVhui6XIPM"
 if bot_token is None:
     raise ValueError("BOT_TOKEN environment variable not set")
 
@@ -58,16 +58,16 @@ def welcome(message):
   cursor.execute("INSERT INTO users (chat_id) VALUES (?)", (chat_id,))
   conn.commit()
 
- bot.reply_to(message, "Привет! Я бот, который оповещает о раздачах игр. Выберите команду в меню.")
+ bot.reply_to(message, "Привет! Я бот, с которым тебе будет проще подбирать классные игры на вечер!💫✨\n ———Что я умею 👇🤖👇——— \n Оповещать о раздачах бесплатных игр и клевых скидках в Steam🎮💨\n Оповещать о раздачах бесплатных игр и клевых скидках в Epic Store🎮🪄\n Оповещать о раздачах бесплатных игр и клевых скидках в Gog Store🎮🎉\n Подберу тебе персонально замечательную игру исходя из твоих предпочтений!⚡️🎯\n ——————\n ———🤖Почему меня стоит использовать?📍———\n 1) Твой персональный подбор игр прямо в Telegram! Вечер явно будет интереснее!🎮🤖\n 2) Оповещение о раздачах сразу из трёх магазинов! Больше не нужно заходить на остальные сайты, достаточно подождать моего оповещения!💎🎁\n 3) Оповещу о новых раздачах быстрее чем остальные ресурсы! Мои процессы оптимизированы, раздачи и скидки присылаю по мере их появления!📬🚀\n ——————\n Для начала работы со мной, выбери один из пунктов в меню! Также пожалуйста подпишись, чтобы не пропустить свежие раздачи!🎫💫")
  show_menu(message)
 
 # Функция для показа меню
 def show_menu(message):
  markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
- item1 = types.KeyboardButton("Проверить раздачи в Steam")
- item2 = types.KeyboardButton("Проверить раздачи в Epic")
- item3 = types.KeyboardButton("Проверить раздачи в GOG")
- item4 = types.KeyboardButton("Проверить все раздачи")
+ item1 = types.KeyboardButton("Раздачи в Steam")
+ item2 = types.KeyboardButton("Раздачи в Epic")
+ item3 = types.KeyboardButton("Раздачи в GOG")
+ item4 = types.KeyboardButton("Все раздачи")
  item5 = types.KeyboardButton("Подписаться")
  item6 = types.KeyboardButton("Отписаться")
  item7 = types.KeyboardButton("Помощь")
@@ -78,13 +78,13 @@ def show_menu(message):
 @bot.message_handler(content_types=['text'])
 def func(message):
  chat_id = message.chat.id
- if message.text == "Проверить раздачи в Steam":
+ if message.text == "Раздачи в Steam":
   check_steam_giveaways(chat_id)
- elif message.text == "Проверить раздачи в Epic":
+ elif message.text == "Раздачи в Epic":
   check_epic_giveaways(chat_id)
- elif message.text == "Проверить раздачи в GOG":
+ elif message.text == "Раздачи в GOG":
   check_gog_giveaways(chat_id)
- elif message.text == "Проверить все раздачи":
+ elif message.text == "Все раздачи":
   check_all_giveaways(chat_id)
  elif message.text == "Подписаться":
   subscribe(chat_id)
@@ -143,21 +143,21 @@ def check_steam_giveaways(chat_id):
     link = item.get('href')
     giveaways.append({'title': title, 'link': link})
 
-  new_giveaways = []
-  for giveaway in giveaways:
-    if giveaway['title'] not in last_steam_giveaways:
-      new_giveaways.append(giveaway)
+  #new_giveaways = []
+  #for giveaway in giveaways:
+   # if giveaway['title'] not in last_steam_giveaways:
+    #  new_giveaways.append(giveaway)
 
-  send_giveaway_notifications(new_giveaways, "Steam", chat_id)
+  send_giveaway_notifications(giveaways, "Steam", chat_id)
 
   # Обновляем словарь последних раздач
-  last_steam_giveaways.clear()
-  for giveaway in giveaways:
-    last_steam_giveaways[giveaway['title']] = giveaway['link']
+  #last_steam_giveaways.clear()
+  #for giveaway in giveaways:
+  #  last_steam_giveaways[giveaway['title']] = giveaway['link']
 
   # Обновляем время последнего обновления для Steam в базе данных
-  cursor.execute("UPDATE users SET last_steam_update = ? WHERE chat_id = ?", (datetime.now(), chat_id))
-  conn.commit()
+  #cursor.execute("UPDATE users SET last_steam_update = ? WHERE chat_id = ?", (datetime.now(), chat_id))
+  #conn.commit()
 
 # Функция для проверки раздач на Epic Games Store
 def check_epic_giveaways(chat_id):
@@ -171,21 +171,21 @@ def check_epic_giveaways(chat_id):
     link = item.find('a', class_='css-1w6h27r')['href']
     giveaways.append({'title': title, 'link': link})
 
-  new_giveaways = []
-  for giveaway in giveaways:
-    if giveaway['title'] not in last_epic_giveaways:
-      new_giveaways.append(giveaway)
+ # new_giveaways = []
+  #for giveaway in giveaways:
+   # if giveaway['title'] not in last_epic_giveaways:
+   #   new_giveaways.append(giveaway)
 
-  send_giveaway_notifications(new_giveaways, "Epic Games Store", chat_id)
+  #send_giveaway_notifications(new_giveaways, "Epic Games Store", chat_id)
 
   # Обновляем словарь последних раздач
-  last_epic_giveaways.clear()
-  for giveaway in giveaways:
-    last_epic_giveaways[giveaway['title']] = giveaway['link']
+  #last_epic_giveaways.clear()
+  #for giveaway in giveaways:
+  #  last_epic_giveaways[giveaway['title']] = giveaway['link']
 
   # Обновляем время последнего обновления для Epic в базе данных
-  cursor.execute("UPDATE users SET last_epic_update = ? WHERE chat_id = ?", (datetime.now(), chat_id))
-  conn.commit()
+  #cursor.execute("UPDATE users SET last_epic_update = ? WHERE chat_id = ?", (datetime.now(), chat_id))
+  #conn.commit()
 
 # Функция для проверки раздач на GOG
 def check_gog_giveaways(chat_id):
@@ -199,21 +199,21 @@ def check_gog_giveaways(chat_id):
     link = item.find('a', class_='giveaway__link')['href']
     giveaways.append({'title': title, 'link': link})
 
-  new_giveaways = []
-  for giveaway in giveaways:
-    if giveaway['title'] not in last_gog_giveaways:
-      new_giveaways.append(giveaway)
+ # new_giveaways = []
+  #for giveaway in giveaways:
+  #  if giveaway['title'] not in last_gog_giveaways:
+   #   new_giveaways.append(giveaway)
 
-  send_giveaway_notifications(new_giveaways, "GOG", chat_id)
+ # send_giveaway_notifications(new_giveaways, "GOG", chat_id)
 
   # Обновляем словарь последних раздач
-  last_gog_giveaways.clear()
-  for giveaway in giveaways:
-    last_gog_giveaways[giveaway['title']] = giveaway['link']
+  #last_gog_giveaways.clear()
+  #for giveaway in giveaways:
+  #  last_gog_giveaways[giveaway['title']] = giveaway['link']
 
   # Обновляем время последнего обновления для GOG в базе данных
-  cursor.execute("UPDATE users SET last_gog_update = ? WHERE chat_id = ?", (datetime.now(), chat_id))
-  conn.commit()
+  #cursor.execute("UPDATE users SET last_gog_update = ? WHERE chat_id = ?", (datetime.now(), chat_id))
+  #conn.commit()
 
 # --- Функции для отправки уведомлений ---
 
@@ -233,19 +233,19 @@ def check_all_giveaways(chat_id):
   bot.send_message(chat_id, "Проверка всех раздач завершена!")
 
 # --- Функция для повторения информации о последних раздачах ---
-def repeat_giveaways(message, platform):
-  chat_id = message.chat.id
-  cursor.execute("SELECT last_steam_update, last_epic_update, last_gog_update FROM users WHERE chat_id = ?", (chat_id,))
-  last_updates = cursor.fetchone()
+#def repeat_giveaways(message, platform):
+  #chat_id = message.chat.id
+ # cursor.execute("SELECT last_steam_update, last_epic_update, last_gog_update FROM users WHERE chat_id = ?", (chat_id,))
+ # last_updates = cursor.fetchone()
 
-  if platform == "Steam" and last_updates[0] is not None:
-    check_steam_giveaways(chat_id)
-  elif platform == "Epic Games Store" and last_updates[1] is not None:
-    check_epic_giveaways(chat_id)
-  elif platform == "GOG" and last_updates[2] is not None:
-    check_gog_giveaways(chat_id)
-  else:
-    bot.send_message(chat_id, f"Информация о раздачах в {platform} отсутствует.")
+  #if platform == "Steam" and last_updates[0] is not None:
+   # check_steam_giveaways(chat_id)
+ # elif platform == "Epic Games Store" and last_updates[1] is not None:
+ #   check_epic_giveaways(chat_id)
+ # elif platform == "GOG" and last_updates[2] is not None:
+ #   check_gog_giveaways(chat_id)
+ # else:
+ #   bot.send_message(chat_id, f"Информация о раздачах в {platform} отсутствует.")
 
 # --- Автоматическая проверка раздач ---
 def auto_check_giveaways():

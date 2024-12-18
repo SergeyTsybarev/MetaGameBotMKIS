@@ -27,6 +27,8 @@ Telegram бот, который отслеживает раздачи игр в 
 
 ![Telegram](https://img.shields.io/badge/Telegram-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white)
 
+---------------------------------------------------
+
 ### Команда проекта
 
 Цыбарев Сергей - Тимлид, разработчик, работа с БД [![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=fff)](#) ![SQLite](https://img.shields.io/badge/sqlite-%2307405e.svg?style=for-the-badge&logo=sqlite&logoColor=white) [![Miro](https://img.shields.io/badge/Miro-050038?logo=miro&logoColor=fff)](#)

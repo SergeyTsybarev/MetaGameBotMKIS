@@ -1,6 +1,7 @@
 ## MetaGameBot Telegram
 ## Общее представление
 Telegram бот, который 
+
 · Отслеживает раздачи игр в Steam, Epic Games Store и GOG
 
 · Оповещает пользователей о доступных раздачах

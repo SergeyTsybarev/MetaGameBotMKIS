@@ -16,5 +16,19 @@ Telegram бот, который отслеживает раздачи игр в 
 
 ![alt text](https://github.com/SergeyTsybarev/MetaGameBotMKIS/blob/main/image/Metabotinfo.png?raw=true)
 ## Работа бота
+![alt text](https://github.com/SergeyTsybarev/MetaGameBotMKIS/blob/main/image/rabota.png?raw=true)
 
+## Следите за обновлениями!
 
+![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)
+![Telegram](https://img.shields.io/badge/Telegram-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white)
+
+### Команда проекта
+
+Цыбарев Сергей - Тимлид, разработчик, работа с БД [![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=fff)](#) ![SQLite](https://img.shields.io/badge/sqlite-%2307405e.svg?style=for-the-badge&logo=sqlite&logoColor=white) [![Miro](https://img.shields.io/badge/Miro-050038?logo=miro&logoColor=fff)](#)
+
+Беспалов Роман - Разработчик, работа с БД [![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=fff)](#) ![SQLite](https://img.shields.io/badge/sqlite-%2307405e.svg?style=for-the-badge&logo=sqlite&logoColor=white)
+
+Гребенников Александр - Разработчик [![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=fff)](#)
+
+Ильина Элеонора - Дизайнер, разработчик [![Adobe Illustrator](https://img.shields.io/badge/Adobe%20Illustrator-FF9A00?logo=adobe%20illustrator&logoColor=white)](#) [![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=fff)](#) 
